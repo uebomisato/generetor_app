@@ -1,0 +1,12 @@
+{
+    "items": [
+        {
+            "itemName": "face_01",
+            "itemImagePath": "face_01"
+        },
+        {
+            "itemName": "face_02",
+            "itemImagePath": "face_02"
+        }
+    ]
+}
