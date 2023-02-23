@@ -1,46 +1,83 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-[System.Serializable]
-public class LoadData
+public class button : MonoBehaviour
 {
-    public ItemData[] itemDatas;
-}
+	//　非同期動作で使用するAsyncOperation
+	private AsyncOperation async;
+	//　シーンロード中に表示するUI画面
+	[SerializeField]
+	private GameObject blur;
 
-public class TopManager : MonoBehaviour
-{
-    [SerializeField]
-    Text TextPath;
+	// 遊び方説明画面
+	[SerializeField]
+	private GameObject mainUI;
 
-    string path;
-    ItemData itemData;
+	// 遊び方説明画面
+	[SerializeField]
+	private GameObject descriptionUI;
 
-    // Start is called before the first frame update
-    public RectTransform contentRectTransform;
-    public Button button;
+	[SerializeField]
+	private GameObject loadingImage;
 
+	void Start()
+	{
+		loadingImage.SetActive(false);
+		descriptionUI.SetActive(false);
+		blur.SetActive(false);
+		mainUI.SetActive(true);
+	}
 
-    private void Start()
-    {
+	public void ToEditScene()
+	{
+		loadingImage.SetActive(true);
+		mainUI.SetActive(false);
 
-        for (int i = 0; i < 20; i++)
-        {
-            var obj = Instantiate(button, contentRectTransform);
-            obj.GetComponentInChildren<Text>().text = i.ToString();
-        }
+		//　コルーチンを開始
+		StartCoroutine("LoadData");
+	}
 
-        /*
-        path = Application.persistentDataPath + "/itemData.json";
-        string json = File.ReadAllText(path);
-        TextPath.text = json;
+	IEnumerator LoadData()
+	{
+		// シーンの読み込みをする
+		async = SceneManager.LoadSceneAsync("Edit");
 
-        var parents1 = JsonUtility.FromJson<LoadData>(json);
-                */
+		/*
+		//　読み込みが終わるまで進捗状況をスライダーの値に反映させる
+		while (!async.isDone)
+		{
+			var progressVal = Mathf.Clamp01(async.progress / 0.9f);
+			slider.value = progressVal;
+			yield return null;
+		}
 
-        //TextPath.text = parents1.itemDatas[0].itemName;
-    }
+		loadUI.GetComponent<Text>().text = "読み込み完了！";
+		yield return 3.0f;
+		loadingImage.SetActive(false);
+		*/
+
+		
+		async.allowSceneActivation = false;
+		while (true)
+		{
+			yield return null;
+			// 読み込み完了したら
+			if (async.progress >= 0.9f)
+			{
+				// ロードバーが100%になっても1秒だけ表示維持
+				//loadUI.GetComponent<Text>().text = "読み込み完了！";
+				loadingImage.SetActive(false);
+				yield return new WaitForSeconds(2.0f);
+
+				// シーン読み込み
+				async.allowSceneActivation = true;
+
+				break;
+			}
+		}
+		
+	}
 }
