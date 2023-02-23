@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class button : MonoBehaviour
+public class TopSceneManager : MonoBehaviour
 {
 	//　非同期動作で使用するAsyncOperation
 	private AsyncOperation async;
@@ -21,16 +21,27 @@ public class button : MonoBehaviour
 	private GameObject descriptionUI;
 
 	[SerializeField]
+	private Text lodingText;
+
+	[SerializeField]
 	private GameObject loadingImage;
+
+	private bool _isShowdescriptionUI;
 
 	void Start()
 	{
+		_isShowdescriptionUI = false;
+
 		loadingImage.SetActive(false);
-		descriptionUI.SetActive(false);
+		lodingText.gameObject.SetActive(false);
+		descriptionUI.SetActive(_isShowdescriptionUI);
 		blur.SetActive(false);
 		mainUI.SetActive(true);
 	}
 
+	/// <summary>
+    /// 編集画面へ遷移する
+    /// </summary>
 	public void ToEditScene()
 	{
 		loadingImage.SetActive(true);
@@ -40,26 +51,26 @@ public class button : MonoBehaviour
 		StartCoroutine("LoadData");
 	}
 
+	/// <summary>
+	/// 遊び方画面の表示切り替え
+	/// </summary>
+	public void StateChangeDescriptionUI()
+	{
+		_isShowdescriptionUI = !_isShowdescriptionUI;
+		descriptionUI.SetActive(_isShowdescriptionUI);
+		blur.SetActive(_isShowdescriptionUI);
+	}
+
+	/// <summary>
+    /// 画面遷移する際のローディングアニメーション
+    /// </summary>
+    /// <returns></returns>
 	IEnumerator LoadData()
 	{
 		// シーンの読み込みをする
 		async = SceneManager.LoadSceneAsync("Edit");
+		lodingText.gameObject.SetActive(true);
 
-		/*
-		//　読み込みが終わるまで進捗状況をスライダーの値に反映させる
-		while (!async.isDone)
-		{
-			var progressVal = Mathf.Clamp01(async.progress / 0.9f);
-			slider.value = progressVal;
-			yield return null;
-		}
-
-		loadUI.GetComponent<Text>().text = "読み込み完了！";
-		yield return 3.0f;
-		loadingImage.SetActive(false);
-		*/
-
-		
 		async.allowSceneActivation = false;
 		while (true)
 		{
@@ -68,9 +79,11 @@ public class button : MonoBehaviour
 			if (async.progress >= 0.9f)
 			{
 				// ロードバーが100%になっても1秒だけ表示維持
-				//loadUI.GetComponent<Text>().text = "読み込み完了！";
+				yield return new WaitForSeconds(1.0f);
+				lodingText.GetComponent<Text>().text = "読み込み完了！";
+
+                yield return new WaitForSeconds(2.0f);
 				loadingImage.SetActive(false);
-				yield return new WaitForSeconds(2.0f);
 
 				// シーン読み込み
 				async.allowSceneActivation = true;
@@ -78,6 +91,8 @@ public class button : MonoBehaviour
 				break;
 			}
 		}
-		
+
 	}
 }
+
+

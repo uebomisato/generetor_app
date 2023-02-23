@@ -11,7 +11,7 @@ public class LoadData
     public ItemData[] itemDatas;
 }
 
-public class TopManager : MonoBehaviour
+public class EditSceneManager : MonoBehaviour
 {
     [SerializeField]
     Text TextPath;
@@ -42,5 +42,10 @@ public class TopManager : MonoBehaviour
                 */
 
         //TextPath.text = parents1.itemDatas[0].itemName;
+    }
+
+    public void ToTopScene()
+    {
+        SceneManager.LoadScene("Top");
     }
 }
