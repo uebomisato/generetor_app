@@ -13,11 +13,13 @@ public class LoadData
 
 public class EditSceneManager : MonoBehaviour
 {
+    // 遊び方説明画面
     [SerializeField]
-    Text TextPath;
+    private GameObject editPreviewUI;
+    private bool _isShowEditPreviewUI;
 
-    string path;
-    ItemData itemData;
+    [SerializeField]
+    private GameObject blur;
 
     // Start is called before the first frame update
     public RectTransform contentRectTransform;
@@ -26,26 +28,39 @@ public class EditSceneManager : MonoBehaviour
 
     private void Start()
     {
+        _isShowEditPreviewUI = false;
+
+        editPreviewUI.SetActive(_isShowEditPreviewUI);
+        blur.SetActive(_isShowEditPreviewUI);
 
         for (int i = 0; i < 20; i++)
         {
             var obj = Instantiate(button, contentRectTransform);
             obj.GetComponentInChildren<Text>().text = i.ToString();
         }
-
-        /*
-        path = Application.persistentDataPath + "/itemData.json";
-        string json = File.ReadAllText(path);
-        TextPath.text = json;
-
-        var parents1 = JsonUtility.FromJson<LoadData>(json);
-                */
-
-        //TextPath.text = parents1.itemDatas[0].itemName;
     }
 
     public void ToTopScene()
     {
         SceneManager.LoadScene("Top");
+    }
+
+    // ボタン押した時に発動
+    public void StateChangeEditPreviewUI()
+    {
+        _isShowEditPreviewUI = !_isShowEditPreviewUI;
+        // プレビューのポップアップ表示
+        editPreviewUI.SetActive(_isShowEditPreviewUI);
+        blur.SetActive(_isShowEditPreviewUI);
+    }
+
+    public void OnemoreButton()
+    {
+        StateChangeEditPreviewUI();
+    }
+
+    public void ToPreviewButton()
+    {
+        SceneManager.LoadSceneAsync("Preview");
     }
 }
