@@ -35,7 +35,7 @@ public class TopSceneManager : MonoBehaviour
 		loadingImage.SetActive(false);
 		lodingText.gameObject.SetActive(false);
 		descriptionUI.SetActive(_isShowdescriptionUI);
-		blur.SetActive(false);
+		blur.SetActive(_isShowdescriptionUI);
 		mainUI.SetActive(true);
 	}
 
